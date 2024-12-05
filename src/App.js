@@ -3,72 +3,84 @@ import './index.css';
 import axios from 'axios';
 
 function App() {
+  // State to store the available tickets
   const [availableTickets, setAvailableTickets] = useState(null);
 
-  // Function to fetch ticket count from /api/ticket
+  // Function to fetch the ticket count from the backend
   const getTicketCount = async () => {
     try {
+      console.log('Fetching ticket count...'); // Add this to see if the request is fired
       const response = await axios.get('http://localhost:8080/api/ticket');
-      setAvailableTickets(response.data); // Set the available tickets in state
+      console.log('Response Data:', response.data); // Check the response here
+      setAvailableTickets(response.data); // Update state with the fetched ticket count
     } catch (error) {
       console.error('Error fetching ticket count:', error);
     }
   };
 
-  // Call the function to fetch ticket count when the component mounts
+  // UseEffect to fetch ticket count when the component mounts
   useEffect(() => {
+    console.log('Fetching ticket count...');
     getTicketCount();
-  }, []); // Empty array ensures it runs once when the component mounts // Empty dependency array means it will only run once when the component mounts
+  }, []);  // This will run once when the component mounts
+  
+
+  // Beginner-friendly if-else for ticket status
+  let ticketStatus;
+  if (availableTickets === null) {
+    ticketStatus = <p>Loading...</p>; // Show loading message if data is being fetched
+  } else {
+    ticketStatus = <p>Available tickets: {availableTickets}</p>; // Show available tickets once fetched
+  }
 
   return (
     <div className="app-container">
-      <header className="app-header">
+      <div className="app-header">
         <h1>Real-Time Ticketing System</h1>
-      </header>
-      <main>
+      </div>
+      
+      <div className="main-content">
         {/* Ticket Pool Status Section */}
-        <section className="ticket-status">
+        <div className="ticket-status">
           <h2>Ticket Pool Status</h2>
-          <div id="ticket-display">
-            {/* This will show ticket details */}
-            {availableTickets !== null ? (
-              <p>Available tickets: {availableTickets}</p>
-            ) : (
-              <p>Loading...</p> // Show loading message while data is being fetched
-            )}
-          </div>
-        </section>
+          {availableTickets === null ? (
+            <p>Loading...</p> // Show loading message if data is being fetched
+          ) : (
+            <p>Available tickets: {availableTickets}</p> // Show available tickets once fetched
+          )}
+        </div>
 
         {/* Control Panel Section */}
-        <section className="Simulation">
+        <div className="simulation">
           <h2>Simulation</h2>
           <button id="start-button">Start</button>
           <button id="stop-button">Stop</button>
           <button id="reset-button">Reset</button>
-        </section>
+        </div>
 
         {/* Configuration Settings Section */}
-        <section className="configuration">
+        <div className="configuration">
           <h2>Configuration Settings</h2>
           <form>
             <label>
-              Total Tickets:{''}
-              <input type="number" id="total-tickets"/>
+              Total Tickets:{' '}
+              <input type="number" id="total-tickets" />
             </label>
             <label>
-              Ticket Release Rate:{''}
-              <input type="number" id="release-rate"/>
+              Ticket Release Rate:{' '}
+              <input type="number" id="release-rate" />
             </label>
             <label>
-              Customer Retrieval Rate:{''}
-              <input type="number" id="retrieval-rate"/>
+              Customer Retrieval Rate:{' '}
+              <input type="number" id="retrieval-rate" />
             </label>
             <button type="submit">Save Settings</button>
           </form>
-        </section>
-      </main>
+        </div>
+      </div>
     </div>
   );
 }
 
 export default App;
+  
